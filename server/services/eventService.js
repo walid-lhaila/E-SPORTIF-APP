@@ -19,6 +19,16 @@ class EventService {
    }
 
 
+   async deleteEvent(eventId, userId) {
+
+    const event = await eventDb.findOneAndDelete({_id: eventId, organizer: userId});
+    if(!event) {
+        throw new Error ('Event Not Found Or Unauthorized')
+    }
+    return event;
+    }
+
+
 
 
 }

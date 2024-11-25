@@ -1,5 +1,5 @@
 import eventService from "../services/eventService.js"
-import jwt from 'jsonwebtoken'
+import jwt, { decode } from 'jsonwebtoken'
 
 
 
@@ -31,4 +31,31 @@ const getEventByUserId = async(req, res) => {
     }
 }
 
-export default { createEvent, getEventByUserId };
+
+const deleteEvent = async (req, res) => {
+    try {
+        const token = req.headers["authorization"].split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+        const eventId = req.params.id;
+    
+
+        const result = await eventService.deleteEvent(eventId, userId);
+        if(!result) {
+            return res.status(500).json({
+                message: "Event Not Found",
+            })
+        }
+        
+        res.status(200).json({
+            message: "Event Deleted Successfully"
+        });
+        } catch(error) {
+            res.status(500).json({
+                message: error.message ||  "An error occurred while deleting the event." 
+            });
+        }
+}
+
+
+export default { createEvent, getEventByUserId, deleteEvent };
