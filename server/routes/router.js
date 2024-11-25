@@ -11,4 +11,5 @@ route.post('/api/login', authController.login);
 route.post('/api/createEvent', verifyToken, eventController.createEvent);
 route.get('/api/getEvents', verifyToken, eventController.getEventByUserId);
 route.delete('/api/delete/:id', verifyToken, eventController.deleteEvent);
+route.put('/api/update/:id', verifyToken, eventController.updateEvent);
 export default route;

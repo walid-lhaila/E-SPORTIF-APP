@@ -58,4 +58,23 @@ const deleteEvent = async (req, res) => {
 }
 
 
-export default { createEvent, getEventByUserId, deleteEvent };
+const updateEvent = async (req, res) => {
+    try {
+        
+        const userId = req.user.id;
+        const eventId = req.params.id;
+        const eventData = req.body;
+
+        const updatedEvent = await eventService.updateEvent(eventId, userId, eventData);
+        
+        res.status(200).json({
+            message: "event Updated Successfully", UpdatedEvent: updatedEvent
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "An error occurred while deleting the event." 
+        })
+    }
+}
+
+export default { createEvent, getEventByUserId, deleteEvent, updateEvent };

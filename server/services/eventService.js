@@ -29,6 +29,13 @@ class EventService {
     }
 
 
+    async updateEvent(eventId, userId, eventData) {
+        const event = await eventDb.findOneAndUpdate({_id: eventId, organizer: userId}, {$set: eventData}, {new: true});
+        if(!event) {
+            throw new Error ('Event Not Found')
+        }
+        return event;
+    }
 
 
 }
