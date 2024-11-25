@@ -18,6 +18,19 @@ class ParticipantsService {
             throw new Error(error.message);
         }
     };
+
+
+    async getAllParticipants(eventId) {
+        try {
+            const event = await eventDb.findById(eventId, 'participants');
+            if(!event){
+                throw new Error ('Event Not Found');
+            } 
+            return event.participants;
+        } catch(error) {
+            throw new error(error.message);
+        }
+    }
 }
 
 export default new ParticipantsService();

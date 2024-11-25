@@ -15,4 +15,5 @@ route.delete('/api/delete/:id', verifyToken, eventController.deleteEvent);
 route.put('/api/update/:id', verifyToken, eventController.updateEvent);
 
 route.post('/api/event/:id/participants', verifyToken, participantsController.addParticipants);
+route.get('/api/:id/getAllParticipants', verifyToken, participantsController.getAllParticipants);
 export default route;
