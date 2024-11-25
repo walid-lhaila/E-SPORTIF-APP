@@ -27,6 +27,10 @@ var eventSchema = new mongoose.Schema({
     date: {
         type: Date,
         require: true
+    },
+
+    organizer: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'Organizer', require: true
     }
 
 

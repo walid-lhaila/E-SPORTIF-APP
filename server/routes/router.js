@@ -9,5 +9,6 @@ route.post('/api/register', authController.register);
 route.post('/api/login', authController.login);
 
 route.post('/api/createEvent', verifyToken, eventController.createEvent);
+route.get('/api/getEvents', verifyToken, eventController.getEventByUserId);
 
 export default route;
