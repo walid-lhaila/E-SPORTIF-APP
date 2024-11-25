@@ -1,4 +1,4 @@
-import organizerDb from "../model/organizerModel.js";
+import organizerDb from "../models/organizerModel.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 

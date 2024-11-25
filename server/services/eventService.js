@@ -1,4 +1,4 @@
-import eventDb from "../model/eventModel.js";
+import eventDb from "../models/eventModel.js";
 
 
 

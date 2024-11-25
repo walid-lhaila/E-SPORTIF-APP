@@ -31,7 +31,23 @@ var eventSchema = new mongoose.Schema({
 
     organizer: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Organizer', require: true
-    }
+    },
+
+    participants: [{
+        fullName: {
+            type: String,
+            required: true
+        },
+        phoneNumber: {
+            type: String,
+            required: true
+        },
+        email: {
+            type: String,
+            required: true
+        }
+    }]
+
 
 
 })
