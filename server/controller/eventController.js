@@ -6,8 +6,13 @@ import jwt, { decode } from 'jsonwebtoken'
 
 const createEvent = async (req, res) => {
     try {
+        if (!req.files || !req.files.image) {
+            return res.status(400).json({ message: "Image file are required" });
+        }
         const userId = req.user.id
-        const savedEvent = await eventService.createEvent(req.body, userId);
+        const savedEvent = await eventService.createEvent(req.body, userId, {
+            image:req.files.image[0],
+        });
         res.status(201).json({message: 'Event Created Succesfully', event: savedEvent});
     } catch (error) {
         res.status(500).send({

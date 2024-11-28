@@ -29,7 +29,6 @@ const getAllParticipants = async (req, res) => {
             message: "Participants Retrieved Successfully",
             participants: participants
         });
-        console.log(participants);
     } catch (error) {
         res.status(500).json({
             error: error.message
