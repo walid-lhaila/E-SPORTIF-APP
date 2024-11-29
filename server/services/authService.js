@@ -20,23 +20,33 @@ class AuthService {
         return await organizer.save();
     }
 
-    async login (email, password) {
+    async login(email, password) {
         try {
-            const organizer = await organizerDb.findOne({email});
-            if(!organizer) throw new Error ('Organizer Not Found');
-
-            const isMatch = await bcrypt.compare(password, organizer.password);
-            if(!isMatch) throw new Error ("Invalid Credentials!");
-
-            const token = jwt.sign({id: organizer._id, firstName: organizer.firstName, lastName: organizer.lastName, phone: organizer.phone}, process.env.JWT_SECRET, {
-                expiresIn: process.env.JWT_EXPIRES_IN
-            });
-            return { token };
-        } catch (error) {
-            console.error('Error during login:', error.message );
+          const organizer = await organizerDb.findOne({ email });
+      
+          if (!organizer) {
             throw new Error('Authentication Failed !');
+          }
+      
+          const isMatch = await bcrypt.compare(password, organizer.password);
+          if (!isMatch) {
+            throw new Error('Authentication Failed !');
+          }
+      
+          const token = jwt.sign(
+            { id: organizer._id, firstName: organizer.firstName, lastName: organizer.lastName, phone: organizer.phone },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
+          );
+      
+          return { token };
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error during login:', error.message);
+          }
+          throw new Error('Authentication Failed !');
         }
-    }
+      }
 
 
 }

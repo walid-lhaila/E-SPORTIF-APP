@@ -45,15 +45,16 @@ const deleteEvent = async (req, res) => {
         const eventId = req.params.id;
     
 
-        const result = await eventService.deleteEvent(eventId, userId);
-        if(!result) {
+        const eventIdDeleted = await eventService.deleteEvent(eventId, userId);
+        if(!eventIdDeleted) {
             return res.status(500).json({
                 message: "Event Not Found",
             })
         }
         
         res.status(200).json({
-            message: "Event Deleted Successfully"
+            message: "Event Deleted Successfully",
+            eventId: eventIdDeleted,
         });
         } catch(error) {
             res.status(500).json({
@@ -71,15 +72,21 @@ const updateEvent = async (req, res) => {
         const eventData = req.body;
 
         const updatedEvent = await eventService.updateEvent(eventId, userId, eventData);
-        
+        if (!updatedEvent) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
         res.status(200).json({
-            message: "event Updated Successfully", UpdatedEvent: updatedEvent
+            message: "Event Updated Successfully",
+            UpdatedEvent: updatedEvent,
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({
-            message: error.message || "An error occurred while deleting the event." 
-        })
+            message: error.message || "An error occurred while updating the event.",
+        });
     }
-}
+};
+
 
 export default { createEvent, getEventByUserId, deleteEvent, updateEvent };

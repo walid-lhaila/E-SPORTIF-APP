@@ -32,7 +32,7 @@ class EventService {
     if(!event) {
         throw new Error ('Event Not Found Or Unauthorized')
     }
-    return event;
+    return event._id;
     }
 
 
