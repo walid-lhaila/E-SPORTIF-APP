@@ -31,6 +31,26 @@ class ParticipantsService {
             throw new Error(error.message);
         }
     }
+
+
+    async deleteParticipants(eventId, participantsToDelete) {
+        try {
+            const event = await eventDb.findById(eventId);
+            if (!event) {
+                throw new Error('Event Not Found');
+            }
+    
+            const updateEvent = await eventDb.findByIdAndUpdate(
+                eventId,
+                { $pull: { participants: { _id: { $in: participantsToDelete } } } },
+                { new: true }
+            );
+    
+            return updateEvent;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default new ParticipantsService();

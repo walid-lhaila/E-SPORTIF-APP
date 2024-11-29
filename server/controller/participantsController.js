@@ -37,4 +37,30 @@ const getAllParticipants = async (req, res) => {
 }
 
 
-export default {addParticipants, getAllParticipants};
+
+const deleteParticipants = async (req, res) => {
+    const { id: eventId } = req.params;
+    const { participants } = req.body;
+
+    try {
+        if (!participants || !Array.isArray(participants)) {
+            return res.status(400).json({ error: 'Participants must be an array' });
+        }
+
+        const updateEvent = await participantsService.deleteParticipants(eventId, participants);
+        if (!updateEvent) {
+            return res.status(404).json({ error: "Event or participants not found" });
+        }
+        res.status(200).json({
+            message: "Participants Deleted Successfully",
+            event: updateEvent
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+
+export default {addParticipants, getAllParticipants, deleteParticipants};
