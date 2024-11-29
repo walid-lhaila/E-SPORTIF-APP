@@ -28,7 +28,7 @@ class ParticipantsService {
             } 
             return event.participants;
         } catch(error) {
-            throw new error(error.message);
+            throw new Error(error.message);
         }
     }
 }
