@@ -43,7 +43,7 @@ const deleteParticipants = async (req, res) => {
     const { participants } = req.body;
 
     try {
-        if (!participants || !Array.isArray(participants)) {
+        if (!Array.isArray(participants)) {
             return res.status(400).json({ error: 'Participants must be an array' });
         }
 
@@ -53,12 +53,10 @@ const deleteParticipants = async (req, res) => {
         }
         res.status(200).json({
             message: "Participants Deleted Successfully",
-            event: updateEvent
+            event: updateEvent,
         });
     } catch (error) {
-        res.status(500).json({
-            error: error.message
-        });
+        res.status(500).json({ error: error.message });
     }
 };
 
