@@ -63,27 +63,23 @@ const deleteEvent = async (req, res) => {
         }
 }
 
-
 const updateEvent = async (req, res) => {
+    const { id: eventId } = req.params;
+    const updatedData = req.body;
+
+    if (req.files && req.files.image) {
+        updatedData.image = req.files.image[0].path;
+    }
+
     try {
-        
-        const userId = req.user.id;
-        const eventId = req.params.id;
-        const eventData = req.body;
-
-        const updatedEvent = await eventService.updateEvent(eventId, userId, eventData);
-        if (!updatedEvent) {
-            return res.status(404).json({ message: "Event not found" });
-        }
-
+        const updatedEvent = await eventService.updateEvent(eventId, updatedData, req.files ? req.files.image[0] : null);
         res.status(200).json({
             message: "Event Updated Successfully",
-            UpdatedEvent: updatedEvent,
+            data: updatedEvent,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: error.message || "An error occurred while updating the event.",
+        res.status(400).json({
+            message: error.message || "Failed to update event",
         });
     }
 };

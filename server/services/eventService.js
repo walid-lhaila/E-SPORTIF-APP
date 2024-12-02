@@ -36,12 +36,17 @@ class EventService {
     }
 
 
-    async updateEvent(eventId, userId, eventData) {
-        const event = await eventDb.findOneAndUpdate({_id: eventId, organizer: userId}, {$set: eventData}, {new: true});
-        if(!event) {
-            throw new Error ('Event Not Found')
+    async updateEvent(eventId, updatedData, file) {
+        if (file) {
+            const imageUrl = await this.uploadEventImage(file, 'images');
+            updatedData.image = imageUrl; 
         }
-        return event;
+    
+        const updatedEvent = await eventDb.findByIdAndUpdate(eventId, { $set: updatedData }, { new: true });
+        if (!updatedEvent) {
+            throw new Error("Event Not Found");
+        }
+        return updatedEvent;
     }
 
     async uploadEventImage(file, folder) {

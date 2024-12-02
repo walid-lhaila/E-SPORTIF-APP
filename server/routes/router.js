@@ -13,7 +13,7 @@ route.post('/api/login', authController.login);
 route.post('/api/createEvent', verifyToken,upload, eventController.createEvent);
 route.get('/api/getEvents', verifyToken, eventController.getEventByUserId);
 route.delete('/api/delete/:id', verifyToken, eventController.deleteEvent);
-route.put('/api/update/:id', verifyToken, eventController.updateEvent);
+route.put('/api/update/:id', verifyToken,upload, eventController.updateEvent);
 
 route.post('/api/event/:id/participants', verifyToken, participantsController.addParticipants);
 route.get('/api/:id/getAllParticipants', verifyToken, participantsController.getAllParticipants);
