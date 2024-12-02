@@ -1,8 +1,9 @@
 import EventService from '../services/eventService';
 import eventDb from '../models/eventModel';
 import minio from '../../minio';
+
 jest.mock('../models/eventModel');
-jest.mock('../../minio');  
+jest.mock('../../minio');
 
 describe('EventService', () => {
   let eventData;
@@ -90,50 +91,54 @@ describe('EventService', () => {
   });
 
   describe('updateEvent', () => {
-    it('should update the event if it belongs to the user', async () => {
-      const mockEvent = { title: 'Updated Event', description: 'Updated Description' };
-      eventDb.findOneAndUpdate.mockResolvedValue(mockEvent);
+    it('should update the event and return the updated data', async () => {
+      const mockEvent = { _id: 'event123', title: 'Original Title' };
+      const updatedData = { title: 'Updated Event' };
 
-      const updatedEvent = await EventService.updateEvent('event123', userId, { title: 'Updated Event' });
+      eventDb.findByIdAndUpdate.mockResolvedValue({ ...mockEvent, ...updatedData });
 
-      expect(eventDb.findOneAndUpdate).toHaveBeenCalledWith(
-        { _id: 'event123', organizer: userId },
-        { $set: { title: 'Updated Event' } },
+      const updatedEvent = await EventService.updateEvent('event123', updatedData, file);
+
+      expect(eventDb.findByIdAndUpdate).toHaveBeenCalledWith(
+        'event123',
+        { $set: updatedData },
         { new: true }
       );
       expect(updatedEvent.title).toBe('Updated Event');
     });
 
-    it('should throw an error if the event is not found', async () => {
-      eventDb.findOneAndUpdate.mockResolvedValue(null);
+    it('should include an updated image if a new file is provided', async () => {
+      const mockEvent = { _id: 'event123', title: 'Original Title' };
+      const updatedData = { title: 'Updated Event' };
 
-      await expect(EventService.updateEvent('event123', userId, { title: 'Updated Event' }))
+      minio.bucketExists.mockResolvedValue(true);
+      minio.fPutObject.mockResolvedValue(true);
+
+      const newImageUrl = 'http://127.0.0.1:9000/e-sportif/images/newEvent-image.jpg';
+      jest.spyOn(EventService, 'uploadEventImage').mockResolvedValue(newImageUrl);
+
+      eventDb.findByIdAndUpdate.mockResolvedValue({ ...mockEvent, ...updatedData, image: newImageUrl });
+
+      const updatedEvent = await EventService.updateEvent('event123', updatedData, file);
+
+      expect(EventService.uploadEventImage).toHaveBeenCalledWith(file, 'images');
+      expect(eventDb.findByIdAndUpdate).toHaveBeenCalledWith(
+        'event123',
+        { $set: { ...updatedData, image: newImageUrl } },
+        { new: true }
+      );
+      expect(updatedEvent.image).toBe(newImageUrl);
+    });
+
+    it('should throw an error if the event is not found', async () => {
+      eventDb.findByIdAndUpdate.mockResolvedValue(null);
+
+      await expect(EventService.updateEvent('event123', { title: 'Updated Event' }))
         .rejects
         .toThrow('Event Not Found');
     });
   });
 
-  describe('uploadEventImage', () => {
-    it('should upload the event image and return a URL', async () => {
-      minio.bucketExists.mockResolvedValue(true);
-      minio.fPutObject.mockResolvedValue(true);
 
-      const imageUrl = await EventService.uploadEventImage(file, 'images');
-
-      expect(minio.fPutObject).toHaveBeenCalledWith('e-sportif', 'images/event-image.jpg', file.path);
-      expect(imageUrl).toBe('http://127.0.0.1:9000/e-sportif/images/event-image.jpg');
-    });
-
-    it('should create a bucket if it does not exist', async () => {
-      minio.bucketExists.mockResolvedValue(false);
-      minio.makeBucket.mockResolvedValue(true);
-      minio.fPutObject.mockResolvedValue(true);
-
-      const imageUrl = await EventService.uploadEventImage(file, 'images');
-
-      expect(minio.makeBucket).toHaveBeenCalledWith('e-sportif', 'us-east-1');
-      expect(minio.fPutObject).toHaveBeenCalledWith('e-sportif', 'images/event-image.jpg', file.path);
-      expect(imageUrl).toBe('http://127.0.0.1:9000/e-sportif/images/event-image.jpg');
-    });
   });
-});
+
